@@ -189,6 +189,31 @@ async function run() {
             }
         })
 
+        app.post("/api/products", async (req: AuthedRequest, res: Response) => {
+            try {
+                const product = req.body as ProductDocument
+                const now = new Date()
+
+                if (!product?.title || !product?.slug) {
+                    return res.status(400).json({ message: "title and slug are required" })
+                }
+
+                const result = await allProducts.insertOne({
+                    ...product,
+                    createdAt: now,
+                    updatedAt: now
+                })
+
+                res.status(201).json({
+                    message: "Product created successfully",
+                    insertedId: result.insertedId
+                })
+            } catch (error) {
+                const message = error instanceof Error ? error.message : "Internal Server Error"
+                res.status(500).json({ error: message })
+            }
+        })
+
         await client.db("admin").command({ ping: 1 })
         console.log("Pinged your deployment. You successfully connected to MongoDB!")
 
