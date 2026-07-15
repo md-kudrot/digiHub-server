@@ -174,6 +174,21 @@ async function run() {
             }
         })
 
+        app.get("/api/products/:slug", async (req: Request, res: Response) => {
+            try {
+                const product = await allProducts.findOne({ slug: req.params.slug })
+
+                if (!product) {
+                    return res.status(404).json({ message: "Product not found" })
+                }
+
+                res.json(product)
+            } catch (error) {
+                const message = error instanceof Error ? error.message : "Internal Server Error"
+                res.status(500).json({ error: message })
+            }
+        })
+
         await client.db("admin").command({ ping: 1 })
         console.log("Pinged your deployment. You successfully connected to MongoDB!")
 
