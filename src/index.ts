@@ -174,7 +174,7 @@ async function run() {
             }
         })
 
-        app.get("/api/products/:slug", async (req: Request, res: Response) => {
+        app.get("/api/products/:slug", verifyToken, async (req: Request, res: Response) => {
             try {
                 const product = await allProducts.findOne({ slug: req.params.slug })
 
@@ -189,7 +189,7 @@ async function run() {
             }
         })
 
-        app.post("/api/products", async (req: AuthedRequest, res: Response) => {
+        app.post("/api/products", verifyToken, async (req: AuthedRequest, res: Response) => {
             try {
                 const product = req.body as ProductDocument
                 const now = new Date()
