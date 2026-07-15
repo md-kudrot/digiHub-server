@@ -214,6 +214,32 @@ async function run() {
             }
         })
 
+        app.delete("/api/products/:id", verifyToken, async (req: AuthedRequest, res: Response) => {
+            try {
+                const { id } = req.params
+                const productId = Array.isArray(id) ? id[0] : id
+
+                if (!productId) {
+                    return res.status(400).json({ message: "Invalid product id" })
+                }
+
+                if (!ObjectId.isValid(productId)) {
+                    return res.status(400).json({ message: "Invalid product id" })
+                }
+
+                const result = await allProducts.deleteOne({ _id: new ObjectId(productId) })
+
+                if (result.deletedCount === 0) {
+                    return res.status(404).json({ message: "Product not found" })
+                }
+
+                res.json({ message: "Product deleted successfully" })
+            } catch (error) {
+                const message = error instanceof Error ? error.message : "Internal Server Error"
+                res.status(500).json({ error: message })
+            }
+        })
+
         await client.db("admin").command({ ping: 1 })
         console.log("Pinged your deployment. You successfully connected to MongoDB!")
 
