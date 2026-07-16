@@ -52,7 +52,7 @@ const verifyToken = async (req, res, next) => {
 };
 async function run() {
     try {
-        await client.connect();
+        // await client.connect()
         const database = client.db("digiHub");
         const allProducts = database.collection("products");
         app.get("/api/products", async (req, res) => {
@@ -119,7 +119,7 @@ async function run() {
                 res.status(500).json({ error: message });
             }
         });
-        app.get("/api/products/:slug", async (req, res) => {
+        app.get("/api/products/:slug", verifyToken, async (req, res) => {
             try {
                 const product = await allProducts.findOne({ slug: req.params.slug });
                 if (!product) {
@@ -175,8 +175,8 @@ async function run() {
                 res.status(500).json({ error: message });
             }
         });
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+        // await client.db("admin").command({ ping: 1 })
+        // console.log("Pinged your deployment. You successfully connected to MongoDB!")
         app.listen(port, () => {
             console.log(`Example app listening on port ${port}`);
         });
